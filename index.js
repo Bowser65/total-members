@@ -1,19 +1,18 @@
+/*
+ * Copyright (c) 2020 Bowser65
+ * Licensed under the Open Software License version 3.0
+ * Original work under MIT; See LICENSE.
+ */
+
 const { Plugin } = require("powercord/entities");
 const { inject, uninject } = require("powercord/injector");
 const { forceUpdateElement } = require("powercord/util");
+const { React, FluxDispatcher, getModule } = require('powercord/webpack')
 
-const {
-	Webpack: {
-		FindModule,
-		CommonModules: { React, FluxDispatcher },
-	},
-	Tools: { DOMTools },
-} = KLibrary;
-
-const { ListThin } = FindModule.byProps("ListThin");
-const { requestMembers } = FindModule.byProps("requestMembers");
-const { getLastSelectedGuildId } = FindModule.byProps("getLastSelectedGuildId");
-const { getMemberCount } = FindModule.byProps("getMemberCount");
+const { ListThin } = getModule([ "ListThin" ], false);
+const { requestMembers } = getModule([ "requestMembers" ], false);
+const { getLastSelectedGuildId } = getModule([ "getLastSelectedGuildId" ], false);
+const { getMemberCount } = getModule([ "getMemberCount" ], false);
 
 const Settings = require("./components/Settings");
 const TotalMembersElement = require("./components/TotalMembersElement");
@@ -21,19 +20,25 @@ const TotalMembersElement = require("./components/TotalMembersElement");
 let cache = {};
 
 module.exports = class TotalMembers extends Plugin {
+	constructor () {
+		super()
+		// this.settings.get at inject time would be enough, but this ensures it'll get re-rendered in all cases
+		this.ConnectedTotalMembersElement = this.settings.connectStore(
+			(props) => React.createElement(TotalMembersElement, { ...props, useMembersGroupStyle: props.getSetting('useMembersGroupStyle') })
+		)
+	}
+
 	async startPlugin() {
 		this.loadStylesheet("style.scss");
-
-		this.Settings = new KLibrary.Settings(this.entityID);
 
 		powercord.api.settings.registerSettings(this.entityID, {
 			category: this.entityID,
 			label: "Total Members",
-			render: () =>
+			render: (props) =>
 				React.createElement(Settings, {
+					...props,
 					cache,
-					Settings: this.Settings,
-					getMemberCounts: this.getMemberCounts,
+					getMemberCounts: this.getMemberCounts.bind(this),
 				}),
 		});
 
@@ -52,12 +57,9 @@ module.exports = class TotalMembers extends Plugin {
 				const id = getLastSelectedGuildId();
 				const total = getMemberCount(id);
 				reactElement.props.children = [
-					React.createElement(TotalMembersElement, {
-						Settings: this.Settings,
+					React.createElement(this.ConnectedTotalMembersElement, {
 						total,
-						counts: (async () => {
-							return await this.getMemberCounts(id);
-						})(),
+						counts: this.getMemberCounts(id),
 						cached: cache[id],
 					}),
 					reactElement.props.children,
@@ -77,11 +79,7 @@ module.exports = class TotalMembers extends Plugin {
 	}
 
 	forceUpdateMembersList() {
-		forceUpdateElement(
-			DOMTools.classNamesToSelectors(
-				FindModule.classes("membersWrap").membersWrap
-			)
-		);
+		forceUpdateElement(`.${getModule([ 'membersWrap' ], false).membersWrap}`);
 	}
 
 	getMemberCounts(id) {

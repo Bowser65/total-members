@@ -1,22 +1,19 @@
-const {
-	Webpack: {
-		FindModule,
-		CommonModules: { React },
-	},
-	Tools: {
-		ReactTools: { WrapBoundary },
-	},
-} = KLibrary;
+/*
+ * Copyright (c) 2020 Bowser65
+ * Licensed under the Open Software License version 3.0
+ * Original work under MIT; See LICENSE.
+ */
+
+const { React, getModule } = require('powercord/webpack')
+
 const classes = {
-	...FindModule.classes("membersGroup"),
-	...FindModule.classes("statusOnline"),
+	...getModule([ "membersGroup" ], false),
+	...getModule([ "statusOnline" ], false)
 };
 
 class TotalMembersElement extends React.Component {
 	constructor(props) {
 		super(props);
-
-		this.props.Settings.addReactSettingsFunctions(this);
 
 		this.state = {
 			total: this.props.total,
@@ -79,10 +76,10 @@ class TotalMembersElement extends React.Component {
 	};
 
 	render() {
-		return this.getSetting("useMembersGroupStyle", false)
+		return this.props.useMembersGroupStyle
 			? this.membersGroupStyle()
 			: this.countBoxStyle();
 	}
 }
 
-module.exports = WrapBoundary(TotalMembersElement);
+module.exports = TotalMembersElement;

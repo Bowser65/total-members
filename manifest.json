@@ -1,8 +1,7 @@
 {
 	"name": "Total Members",
 	"description": "Shows a counter of the total amount of members in a server on the members list.",
-	"author": "Куzа#1794",
-	"version": "1.2.0",
-	"license": "MIT",
-	"dependencies": ["0klibrary"]
+	"author": "Куzа#1794; Bowser65#0001",
+	"version": "1.2.0-fork1",
+	"license": "MIT; OSL-3.0"
 }

@@ -1,29 +1,16 @@
-const {
-	Webpack: {
-		CommonModules: { React },
-	},
-	Tools: {
-		ReactTools: { WrapBoundary },
-	},
-} = KLibrary;
+/*
+ * Copyright (c) 2020 Bowser65
+ * Licensed under the Open Software License version 3.0
+ * Original work under MIT; See LICENSE.
+ */
 
-const { FindModule } = KLibrary.Webpack;
+const { React, getModule } = require('powercord/webpack')
 const { SwitchItem } = require("powercord/components/settings");
 const TotalMembersElement = require("./TotalMembersElement");
-const { getLastSelectedGuildId } = FindModule.byProps("getLastSelectedGuildId");
-const { getMemberCount } = FindModule.byProps("getMemberCount");
+const { getLastSelectedGuildId } = getModule([ "getLastSelectedGuildId" ], false);
+const { getMemberCount } = getModule([ "getMemberCount" ], false);
 
 class Settings extends React.Component {
-	constructor(props) {
-		super(props);
-
-		this.props.Settings.addReactSettingsFunctions(this);
-
-		this.state = {
-			settings: this.props.Settings.getSettings(),
-		};
-	}
-
 	render() {
 		const id = getLastSelectedGuildId();
 		const total = getMemberCount(id);
@@ -31,28 +18,20 @@ class Settings extends React.Component {
 		return (
 			<React.Fragment>
 				<SwitchItem
-					value={this.getSetting("useMembersGroupStyle", false)}
-					onChange={(event) => {
-						this.setSetting(
-							"useMembersGroupStyle",
-							event.target.checked
-						);
-					}}
-					note=""
+					value={this.props.getSetting("useMembersGroupStyle")}
+					onChange={() => this.props.toggleSetting("useMembersGroupStyle")}
 				>
 					Use Member Group Style
 				</SwitchItem>
 				<TotalMembersElement
-					Settings={this.props.Settings}
 					total={total}
-					counts={(async () => {
-						return await this.props.getMemberCounts(id);
-					})()}
+					counts={this.props.getMemberCounts(id)}
 					cached={this.props.cache[id]}
+					useMembersGroupStyle={this.props.getSetting('useMembersGroupStyle')}
 				/>
 			</React.Fragment>
 		);
 	}
 }
 
-module.exports = WrapBoundary(Settings);
+module.exports = Settings;
