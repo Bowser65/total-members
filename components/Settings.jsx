@@ -38,7 +38,7 @@ module.exports = React.memo(
 			<SwitchItem
 				value={props.getSetting('sticky', true)}
 				onChange={() => props.toggleSetting('sticky', true)}
-				note='Wether the member counts indicator should stick to top or not.'
+				note='Whether the member counts indicator should stick to top or not.'
 			>
 				Sticky
 			</SwitchItem>
