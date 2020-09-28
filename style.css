@@ -36,12 +36,18 @@
 	margin-top: -24px;
 }
 
-.total-members.groups .group + .group {
-	padding-top: 0;
-	height: 16px;
+.total-members.groups {
+	padding-bottom: 16px;
 }
 
-.total-members.groups + div h2:first-of-type  {
+.total-members.groups .group:first-of-type {
+	margin-top: 8px;
 	padding-top: 16px;
 	height: 34px;
+}
+
+.total-members.groups .group + .group,
+.total-members.groups + div h2:first-of-type {
+	padding-top: 0;
+	height: 16px;
 }
