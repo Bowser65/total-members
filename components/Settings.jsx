@@ -7,7 +7,7 @@
 const { React } = require('powercord/webpack')
 const { FormTitle } = require('powercord/components')
 const { RadioGroup, SwitchItem } = require('powercord/components/settings')
-const TotalMembersElement = require('./TotalMembers')
+const Preview = require('./Preview')
 
 module.exports = React.memo(
 	(props) => (
@@ -43,11 +43,7 @@ module.exports = React.memo(
 				Sticky
 			</SwitchItem>
 			<FormTitle tag='h4'>Preview</FormTitle>
-			<TotalMembersElement
-				{...props}
-				online={69}
-				total={420}
-			/>
+			<Preview {...props}/>
 		</React.Fragment>
 	)
 )

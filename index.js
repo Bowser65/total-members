@@ -15,7 +15,7 @@ const { getLastSelectedGuildId } = getModule([ "getLastSelectedGuildId" ], false
 const { getMemberCount } = getModule([ "getMemberCount" ], false);
 
 const Settings = require("./components/Settings");
-const TotalMembersElement = require("./components/TotalMembers");
+const TotalMembersComponent = require("./components/TotalMembers");
 
 let cache = {};
 
@@ -24,7 +24,7 @@ module.exports = class TotalMembers extends Plugin {
 		super()
 
 		// this.settings.get at inject time would be enough, but this ensures it'll get re-rendered in all cases
-		this.ConnectedTotalMembersElement = this.settings.connectStore(TotalMembersElement)
+		this.ConnectedTotalMembers = this.settings.connectStore(TotalMembersComponent)
 	}
 
 	async startPlugin() {
@@ -42,7 +42,7 @@ module.exports = class TotalMembers extends Plugin {
 
 			const id = getLastSelectedGuildId()
 			res.props.children = [
-				React.createElement(this.ConnectedTotalMembersElement, {
+				React.createElement(this.ConnectedTotalMembers, {
 					online: cache[id],
 					total: getMemberCount(id),
 					fetchOnline: () => this.getMemberCounts(id),
