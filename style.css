@@ -1,0 +1,47 @@
+/*
+ * Copyright (c) 2020 Bowser65
+ * Licensed under the Open Software License version 3.0
+ * Original work under MIT; See LICENSE.
+ */
+
+.total-members.sticky {
+	top: 0;
+	position: sticky;
+	z-index: 1;
+}
+
+.total-members.counts {
+	padding: 16px 8px;
+
+	font-size: 16px;
+	font-weight: 600;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.total-members.counts.small {
+	font-weight: normal;
+	flex-direction: row;
+	font-size: 14px;
+}
+
+.total-members.counts.small .count + .count {
+	margin-left: 8px;
+}
+
+.total-members.counts + div {
+	margin-top: -24px;
+}
+
+.total-members.groups .group + .group {
+	padding-top: 0;
+	height: 16px;
+}
+
+.total-members.groups + div h2:first-of-type  {
+	padding-top: 16px;
+	height: 34px;
+}

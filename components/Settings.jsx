@@ -4,34 +4,50 @@
  * Original work under MIT; See LICENSE.
  */
 
-const { React, getModule } = require('powercord/webpack')
-const { SwitchItem } = require("powercord/components/settings");
-const TotalMembersElement = require("./TotalMembersElement");
-const { getLastSelectedGuildId } = getModule([ "getLastSelectedGuildId" ], false);
-const { getMemberCount } = getModule([ "getMemberCount" ], false);
+const { React } = require('powercord/webpack')
+const { FormTitle } = require('powercord/components')
+const { RadioGroup, SwitchItem } = require('powercord/components/settings')
+const TotalMembersElement = require('./TotalMembers')
 
-class Settings extends React.Component {
-	render() {
-		const id = getLastSelectedGuildId();
-		const total = getMemberCount(id);
-
-		return (
-			<React.Fragment>
-				<SwitchItem
-					value={this.props.getSetting("useMembersGroupStyle")}
-					onChange={() => this.props.toggleSetting("useMembersGroupStyle")}
-				>
-					Use Member Group Style
-				</SwitchItem>
-				<TotalMembersElement
-					total={total}
-					counts={this.props.getMemberCounts(id)}
-					cached={this.props.cache[id]}
-					useMembersGroupStyle={this.props.getSetting('useMembersGroupStyle')}
-				/>
-			</React.Fragment>
-		);
-	}
-}
-
-module.exports = Settings;
+module.exports = React.memo(
+	(props) => (
+		<React.Fragment>
+			<RadioGroup
+				onChange={e => props.updateSetting('displayMode', e.value)}
+				value={props.getSetting('displayMode', 0)}
+				options={[
+					{
+						name: 'Original',
+						desc: 'Similar to Discord\'s invite counts, although with way larger text and on two lines.',
+						value: 0
+					},
+					{
+						name: 'Invites-like',
+						desc: 'On a single line, using the same design as Discord\'s on invites.',
+						value: 1
+					},
+					{
+						name: 'Member Group',
+						desc: 'Bold text, on two lines, using a similar design to Discord\'s on invites.',
+						value: 2
+					}
+				]}
+			>
+				Display mode
+			</RadioGroup>
+			<SwitchItem
+				value={props.getSetting('sticky', true)}
+				onChange={() => props.toggleSetting('sticky', true)}
+				note='Wether the member counts indicator should stick to top or not.'
+			>
+				Sticky
+			</SwitchItem>
+			<FormTitle tag='h4'>Preview</FormTitle>
+			<TotalMembersElement
+				{...props}
+				online={69}
+				total={420}
+			/>
+		</React.Fragment>
+	)
+)
