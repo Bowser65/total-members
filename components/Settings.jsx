@@ -28,7 +28,7 @@ module.exports = React.memo(
 					},
 					{
 						name: 'Member Group',
-						desc: 'Bold text, on two lines, using a similar design to Discord\'s on invites.',
+						desc: 'On two lines, using the same design as member groups.',
 						value: 2
 					}
 				]}
