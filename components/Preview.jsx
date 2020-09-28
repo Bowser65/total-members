@@ -74,7 +74,7 @@ module.exports = React.memo(
       [ colorMod, 'But how?!' ],
       [ colorStaff, 'Of course they know me, they\'re me' ],
       [ colorMod, 'Oh, that explains' ]
-    ], [ colorStaff, colorMod ])
+    ], [ colorStaff, colorMod, currentUser ])
 
     // Render
     return (

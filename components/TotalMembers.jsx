@@ -65,11 +65,11 @@ class TotalMembers extends React.PureComponent {
 		return (
 			<div className={cls.filter(Boolean).join(' ')}>
 				<h2 className={`group ${classes.membersGroup} container-2ax-kl`}>
-					Members—{this.props.total.toLocaleString()}
+					{Messages.MEMBERS}—{this.props.total.toLocaleString()}
 				</h2>
 				<h2 className={`group ${classes.membersGroup} container-2ax-kl`}>
-					Online—
-					{this.state.online
+					{Messages.STATUS_ONLINE}—
+					{typeof this.state.online === 'number'
 						? this.state.online.toLocaleString()
 						: Messages.DEFAULT_INPUT_PLACEHOLDER}
 				</h2>
