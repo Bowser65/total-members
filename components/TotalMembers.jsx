@@ -4,26 +4,28 @@
  * Original work under MIT; See LICENSE.
  */
 
-const { React, getModule, i18n: { Messages } } = require('powercord/webpack')
+const { React, Flux, getModule, i18n: { Messages } } = require('powercord/webpack')
+const { store: countsStore } = require('../countsStore')
 
+const { requestMembers } = getModule([ 'requestMembers' ], false)
 const classes = {
-	...getModule([ "membersGroup" ], false),
-	...getModule([ "statusOnline" ], false)
-};
+	...getModule([ 'membersGroup' ], false),
+	...getModule([ 'statusOnline' ], false)
+}
 
 class TotalMembers extends React.PureComponent {
-	constructor(props) {
-		super(props);
-		this.state = { online: props.online }
-	}
-
 	componentDidMount () {
 		if (this.props.getSetting('displayMode') > 2) {
 			this.props.updateSetting('displayMode', 0)
 		}
 
-		if (!this.state.online) {
-			this.props.fetchOnline().then(c => this.setState({ online: c }))
+		if (!this.props.online) {
+			setTimeout(() => {
+				if (!this.props.online) {
+					console.log('requesting', this.props.guildId)
+					requestMembers(this.props.guildId)
+				}
+			}, 1.5e3)
 		}
 	}
 
@@ -46,8 +48,8 @@ class TotalMembers extends React.PureComponent {
 				<div className={`count ${classes.statusCounts}`}>
 					<i className={classes.statusOnline}/>
 					<span className={classes.count}>
-						{typeof this.state.online === 'number'
-							? Messages.INSTANT_INVITE_GUILD_MEMBERS_ONLINE.format({ membersOnline: this.state.online })
+						{typeof this.props.online === 'number'
+							? Messages.INSTANT_INVITE_GUILD_MEMBERS_ONLINE.format({ membersOnline: this.props.online })
 							: Messages.DEFAULT_INPUT_PLACEHOLDER}
 					</span>
 				</div>
@@ -69,8 +71,8 @@ class TotalMembers extends React.PureComponent {
 				</h2>
 				<h2 className={`group ${classes.membersGroup} container-2ax-kl`}>
 					{Messages.STATUS_ONLINE}—
-					{typeof this.state.online === 'number'
-						? this.state.online.toLocaleString()
+					{typeof this.props.online === 'number'
+						? this.props.online.toLocaleString()
 						: Messages.DEFAULT_INPUT_PLACEHOLDER}
 				</h2>
 			</div>
@@ -90,49 +92,14 @@ class TotalMembers extends React.PureComponent {
 
 		return null
 	}
-
-	membersGroupStyle = () => {
-		return (
-			<div className={`total-members-group-box`}>
-				<h2 className={`total-members-count ${classes.membersGroup} container-2ax-kl`}>
-					Total Members—{this.state.total.toLocaleString(undefined)}
-				</h2>
-				<h2 className={`total-members-count ${classes.membersGroup} container-2ax-kl`}>
-					Online Members—
-					{this.state.online
-						? this.state.online.toLocaleString(undefined)
-						: "Loading..."}
-				</h2>
-			</div>
-		);
-	};
-
-	countBoxStyle = () => {
-		return (
-			<div className={`total-members-count-box`}>
-				<div className={`total-members-count ${classes.statusCounts}`}>
-					<i
-						className={`${classes.status} ${classes.statusOffline}`}
-					></i>
-					<span className={`${classes.count}`}>
-						{this.state.total.toLocaleString(undefined)} Members
-					</span>
-				</div>
-				<div className={`total-members-count ${classes.statusCounts}`}>
-					<i
-						className={`${classes.status} ${classes.statusOnline}`}
-					></i>
-					<span className={`${classes.count}`}>
-						{this.state.online
-							? `${this.state.online.toLocaleString(
-									undefined
-							  )} Online`
-							: "Loading..."}
-					</span>
-				</div>
-			</div>
-		);
-	};
 }
 
-module.exports = TotalMembers;
+const memberStore = getModule([ 'getMemberCount' ], false)
+module.exports = Flux.connectStores(
+  [ countsStore, memberStore, powercord.api.settings.store ],
+  (props) => ({
+		online: props.guildId ? countsStore.getPresenceCount(props.guildId) : 69,
+		total: props.guildId ? memberStore.getMemberCount(props.guildId) : 420,
+    ...(props.entityID ? powercord.api.settings._fluxProps(props.entityID) : {})
+	})
+)(TotalMembers)

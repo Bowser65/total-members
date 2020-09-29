@@ -9,22 +9,18 @@ const { inject, uninject } = require('powercord/injector')
 const { forceUpdateElement } = require('powercord/util')
 const { React, FluxDispatcher, getModule } = require('powercord/webpack')
 
-const { ListThin } = getModule([ "ListThin" ], false);
-const { requestMembers } = getModule([ "requestMembers" ], false);
-const { getLastSelectedGuildId } = getModule([ "getLastSelectedGuildId" ], false);
-const { getMemberCount } = getModule([ "getMemberCount" ], false);
+const Settings = require('./components/Settings');
+const TotalMembersComponent = require('./components/TotalMembers');
+const { updatePresencesCount } = require('./countsStore');
 
-const Settings = require("./components/Settings");
-const TotalMembersComponent = require("./components/TotalMembers");
-
-let cache = {};
+const { ListThin } = getModule([ 'ListThin' ], false)
+const { getLastSelectedGuildId } = getModule([ 'getLastSelectedGuildId' ], false)
 
 module.exports = class TotalMembers extends Plugin {
 	constructor () {
 		super()
 
-		// this.settings.get at inject time would be enough, but this ensures it'll get re-rendered in all cases
-		this.ConnectedTotalMembers = this.settings.connectStore(TotalMembersComponent)
+		this.handleMemberListUpdate = this.handleMemberListUpdate.bind(this)
 	}
 
 	async startPlugin() {
@@ -42,21 +38,19 @@ module.exports = class TotalMembers extends Plugin {
 
 			const id = getLastSelectedGuildId()
 			res.props.children = [
-				React.createElement(this.ConnectedTotalMembers, {
-					online: cache[id],
-					total: getMemberCount(id),
-					fetchOnline: () => this.getMemberCounts(id),
-				}),
+				React.createElement(TotalMembersComponent, { entityID: this.entityID, guildId: id }),
 				res.props.children,
 			]
 
 			return res
 		})
 
+		FluxDispatcher.subscribe('GUILD_MEMBER_LIST_UPDATE', this.handleMemberListUpdate)
 		this.forceUpdateMembersList()
 	}
 
 	pluginWillUnload() {
+		FluxDispatcher.unsubscribe('GUILD_MEMBER_LIST_UPDATE', this.handleMemberListUpdate)
 		powercord.api.settings.unregisterSettings(this.entityID)
 		uninject('total-members-members-list')
 		this.forceUpdateMembersList()
@@ -66,22 +60,13 @@ module.exports = class TotalMembers extends Plugin {
 		forceUpdateElement(`.${getModule([ 'membersWrap' ], false).membersWrap}`)
 	}
 
-	getMemberCounts(id) {
-		return new Promise(resolve => {
-			function onMembers(guild) {
-				if (guild.guildId == id) {
-					const online = guild.groups
-						.map((group) => group.id != "offline" ? group.count : 0)
-						.reduce((a, b) => (a + b), 0)
+	handleMemberListUpdate (update) {
+		if (update.id === 'everyone' || update.groups.find(g => g.id === 'online')) { // Figure out a better filter eventually
+			const online = update.groups
+				.map(group => group.id !== 'offline' ? group.count : 0)
+				.reduce((a, b) => (a + b), 0)
 
-					FluxDispatcher.unsubscribe('GUILD_MEMBER_LIST_UPDATE', onMembers)
-					cache[id] = online
-					resolve(online)
-				}
-			}
-
-			FluxDispatcher.subscribe('GUILD_MEMBER_LIST_UPDATE', onMembers)
-			requestMembers(id)
-		});
+			updatePresencesCount(update.guildId, online)
+		}
 	}
-};
+}

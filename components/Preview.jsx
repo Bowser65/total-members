@@ -1,11 +1,10 @@
 /*
  * Copyright (c) 2020 Bowser65
  * Licensed under the Open Software License version 3.0
- * Original work under MIT; See LICENSE.
  */
 
 const { React, getModule, getModuleByDisplayName, constants: { ROLE_COLORS } } = require('powercord/webpack')
-const { Icon, AsyncComponent, AdvancedScrollerAuto, AdvancedScrollerThin } = require('powercord/components')
+const { AsyncComponent, AdvancedScrollerAuto, AdvancedScrollerThin } = require('powercord/components')
 const TotalMembers = require('./TotalMembers')
 
 const HeaderBarContainer = AsyncComponent.from(getModuleByDisplayName('HeaderBarContainer'))
@@ -104,7 +103,7 @@ module.exports = React.memo(
           </AdvancedScrollerAuto>
           <div className={`${membersWrap} ${hiddenMembers}`}>
             <AdvancedScrollerThin className={members}>
-              <TotalMembers {...props} online={69} total={420}/>
+              <TotalMembers {...props}/>
               <div className={content}>
                 <h2 className={`${membersGroup} container-2ax-kl`}>
                   <span>Staff—1</span>
