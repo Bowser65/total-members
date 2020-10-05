@@ -4,6 +4,10 @@
  * Original work under MIT; See LICENSE.
  */
 
+.content-yTz4x3:before {
+	z-index: 2;
+}
+
 .total-members.sticky {
 	top: 0;
 	position: sticky;
@@ -56,10 +60,15 @@
 	height: 455px;
 	margin-top: 16px;
 	border: 1px var(--background-secondary) solid;
+	overflow: hidden;
 }
 
 .total-members-preview > div {
 	height: calc(100% - 48px);
+}
+
+.total-members-preview .buttonContainer-DHceWr {
+	display: none;
 }
 
 .total-members-preview .toolbar-1t6TWx {
