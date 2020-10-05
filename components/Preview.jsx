@@ -56,7 +56,7 @@ function renderItem (currentUser, counts, colors, statuses, { type, section, row
       channel={channel}
       colorString={colors[section]}
       user={currentUser}
-      {...statuses[rowIndex - section]}
+      {...statuses[rowIndex]}
     />
   );
 }
