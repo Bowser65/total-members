@@ -41,7 +41,7 @@ const channel = {
 const roles = [ 'Staff', 'Moderator', 'Online' ];
 
 const { membersGroup } = getModule([ 'membersGroup' ], false);
-function renderItem (currentUser, counts, colors, statuses, { type, section, listIndex }) {
+function renderItem (currentUser, counts, colors, statuses, { type, section, rowIndex }) {
   if (type === 'section') {
     return (
       <h2 className={`${membersGroup} container-2ax-kl`} key={`section-${section}`}>
@@ -52,11 +52,11 @@ function renderItem (currentUser, counts, colors, statuses, { type, section, lis
 
   return (
     <MemberListItem
-      key={`member-${listIndex}`}
+      key={`member-${rowIndex}`}
       channel={channel}
       colorString={colors[section]}
       user={currentUser}
-      {...statuses[listIndex]}
+      {...statuses[rowIndex - section]}
     />
   );
 }
