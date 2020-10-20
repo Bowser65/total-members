@@ -55,7 +55,7 @@ module.exports = class TotalMembers extends Plugin {
 
   pluginWillUnload () {
     FluxDispatcher.unsubscribe('GUILD_MEMBER_LIST_UPDATE', this.handleMemberListUpdate);
-    powercord.api.settings.unregisterSettings(this.entityID);
+    powercord.api.settings.unregisterSettings("total-members");
     uninject('total-members-members-list');
     this.forceUpdateMembersList();
   }
