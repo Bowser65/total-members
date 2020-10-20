@@ -26,7 +26,7 @@ module.exports = class TotalMembers extends Plugin {
   async startPlugin () {
     this.loadStylesheet('style.css');
 
-    powercord.api.settings.registerSettings(this.entityID, {
+    powercord.api.settings.registerSettings("total-members", {
       category: this.entityID,
       label: 'Total Members',
       render: Settings
