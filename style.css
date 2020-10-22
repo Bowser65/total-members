@@ -8,10 +8,14 @@
 	z-index: 2;
 }
 
-.total-members.sticky {
-	top: 0;
-	position: sticky;
+.total-members {
+	position: relative;
 	z-index: 1;
+}
+
+.total-members.sticky {
+	position: sticky;
+	top: 0;
 }
 
 .total-members.counts {

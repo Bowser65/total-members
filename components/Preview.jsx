@@ -63,7 +63,7 @@ function renderItem (currentUser, counts, colors, statuses, { type, section, row
 
 
 // Classes
-const { membersWrap, hiddenMembers, members } = getModule([ 'members' ], false);
+const { membersWrap, hiddenMembers, members } = getModule([ 'members', 'membersWrap' ], false);
 const { icon, iconWrapper } = getModule([ 'iconWrapper', 'transparent' ], false);
 const { title, content: chatContent } = getModule([ 'title', 'content', 'chat' ], false);
 const { size16 } = getModule([ 'size16' ], false);
