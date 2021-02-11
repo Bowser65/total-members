@@ -25,49 +25,56 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-const { React } = require('powercord/webpack');
-const { FormTitle } = require('powercord/components');
-const { RadioGroup, SwitchItem } = require('powercord/components/settings');
-const Preview = require('./Preview');
-const ErrorBoundary = require('./ErrorBoundary');
+const { resolve } = require('path')
+const { React, getModule } = require('powercord/webpack')
+const { Card } = require('powercord/components')
+const { DISCORD_INVITE, SpecialChannels: { SUPPORT_PLUGINS }, SETTINGS_FOLDER } = require('powercord/constants')
+const { gotoOrJoinServer } = require('powercord/util')
 
-module.exports = React.memo(
-  (props) => (
-    <React.Fragment>
-      <RadioGroup
-        onChange={e => props.updateSetting('displayMode', e.value)}
-        value={props.getSetting('displayMode', 0)}
-        options={[
-          {
-            name: 'Original',
-            desc: 'Similar to Discord\'s invite counts, although with way larger text and on two lines.',
-            value: 0
-          },
-          {
-            name: 'Invites-like',
-            desc: 'On a single line, using the same design as Discord\'s on invites.',
-            value: 1
-          },
-          {
-            name: 'Member Group',
-            desc: 'On two lines, using the same design as member groups.',
-            value: 2
-          }
-        ]}
-      >
-        Display mode
-      </RadioGroup>
-      <SwitchItem
-        value={props.getSetting('sticky', true)}
-        onChange={() => props.toggleSetting('sticky', true)}
-        note='Whether the member counts indicator should stick to top or not.'
-      >
-        Sticky
-      </SwitchItem>
-      <FormTitle tag='h4'>Preview</FormTitle>
-      <ErrorBoundary>
-        <Preview {...props}/>
-      </ErrorBoundary>
-    </React.Fragment>
-  )
-);
+const REPO = 'cyyynthia/total-members'
+
+class ErrorBoundary extends React.PureComponent {
+  constructor (props) {
+    super(props)
+
+    this.state = { crashed: false }
+  }
+
+  componentDidCatch (e) {
+    const basePath = resolve(SETTINGS_FOLDER, '..')
+
+    this.setState({
+      crashed: true,
+      error: (e.stack || '')
+        .split('\n')
+        .filter(l => !l.includes('discordapp.com/assets/') && !l.includes('discord.com/assets/'))
+        .join('\n')
+        .split(basePath)
+        .join('')
+    })
+  }
+
+  render () {
+    if (this.state.crashed) {
+      return (
+        <Card className='total-members-error'>
+          <p>
+            An error occurred while rendering the preview. Please let Cynthia know by sending her a message with the
+            error message on the <a href='#' onClick={this.joinPorkord}>Powercord server</a>, or by opening an issue
+            on the <a href={`https://github.com/${REPO}/issues`} target='_blank'>GitHub repository</a>.
+          </p>
+          <code>{this.state.error}</code>
+        </Card>
+      )
+    }
+
+    return this.props.children
+  }
+
+  joinPorkord () {
+    getModule([ 'popLayer' ], false).popLayer()
+    gotoOrJoinServer(DISCORD_INVITE, SUPPORT_PLUGINS)
+  }
+}
+
+module.exports = ErrorBoundary

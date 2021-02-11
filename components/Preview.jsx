@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Cynthia K. Rey, All rights reserved.
+ * Copyright (c) 2020-2021 Cynthia K. Rey, All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@ const HeaderBarContainer = AsyncComponent.from(getModuleByDisplayName('HeaderBar
 const ChannelText = AsyncComponent.from(getModuleByDisplayName('ChannelText'));
 const MemberListItem = AsyncComponent.from(getModuleByDisplayName('MemberListItem'));
 const Scroller = getModule([ 'ListAuto', 'ListRowHeight' ], false).default;
-const ChannelMessage = getModule([ 'MESSAGE_ID_PREFIX' ], false).default;
+const ChannelMessage = getModule([ 'getElementFromMessageId' ], false).default;
 
 const games = [
   'Minecraft',
@@ -57,7 +57,8 @@ const spotify = {
 const channel = {
   isPrivate: () => false,
   isSystemDM: () => false,
-  getGuildId: () => 'uwu'
+  getGuildId: () => 'uwu',
+  isArchivedThread: () => false
 };
 
 const roles = [ 'Staff', 'Moderator', 'Online' ];
